@@ -19,11 +19,18 @@ class World extends ParallaxComponent<DoodleDash> {
         ParallaxImageData('game/background/02_Background_Orbs.png'),
         ParallaxImageData('game/background/03_Background_Block_Shapes.png'),
         ParallaxImageData('game/background/01_Background_Squiggles.png'),
+        ParallaxImageData('game/sprites/UFO_Style_1.png'),
       ],
       fill: LayerFill.width,
-      repeat: ImageRepeat.repeat,
+      repeat: ImageRepeat.noRepeat,
       baseVelocity: Vector2(0, -5),
       velocityMultiplierDelta: Vector2(0, 1.2),
     );
+  }
+
+  @override
+  void update(double dt) async {
+
+    super.update(dt);
   }
 }

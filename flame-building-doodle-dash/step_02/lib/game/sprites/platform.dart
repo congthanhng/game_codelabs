@@ -44,22 +44,155 @@ abstract class Platform<T> extends SpriteGroupComponent<T>
   }
 
   // More on Platforms: Add _move method
+  void _move(double dt) {
+    if (!isMoving) return;
+
+    final double gameWidth = gameRef.size.x;
+
+    if (position.x <= 0) {
+      direction = 1;
+    } else if (position.x >= gameWidth - size.x) {
+      direction = -1;
+    }
+
+    _velocity.x = direction * speed;
+
+    position += _velocity * dt;
+  }
 
   // More on Platforms: Override update method
+  @override
+  void update(double dt) {
+    _move(dt);
+    super.update(dt);
+  }
 }
 
 // Add platforms: Add NormalPlatformState Enum
+enum NormalPlatformState { only }                            // Add lines from here...
+
+class NormalPlatform extends Platform<NormalPlatformState> {
+  NormalPlatform({super.position});
+
+  final Map<String, Vector2> spriteOptions = {
+    'platform_monitor': Vector2(115, 84),
+    'platform_phone_center': Vector2(100, 55),
+    'platform_terminal': Vector2(110, 83),
+    'platform_laptop': Vector2(100, 63),
+  };
+
+  @override
+  Future<void>? onLoad() async {
+    var randSpriteIndex = Random().nextInt(spriteOptions.length);
+
+    String randSprite = spriteOptions.keys.elementAt(randSpriteIndex);
+
+    sprites = {
+      NormalPlatformState.only: await gameRef.loadSprite('game/$randSprite.png')
+    };
+
+    current = NormalPlatformState.only;
+
+    size = spriteOptions[randSprite]!;
+    await super.onLoad();
+  }
+}
 
 // Add platforms: Add NormalPlatform class
 
 // More on Platforms: Add BrokenPlatform State Enum
+enum BrokenPlatformState { cracked, broken }                // Add lines from here...
 
 // More on Platforms: Add BrokenPlatform class
+class BrokenPlatform extends Platform<BrokenPlatformState> {
+  BrokenPlatform({super.position});
+
+  @override
+  Future<void>? onLoad() async {
+    await super.onLoad();
+
+    sprites = <BrokenPlatformState, Sprite>{
+      BrokenPlatformState.cracked:
+      await gameRef.loadSprite('game/platform_cracked_monitor.png'),
+      BrokenPlatformState.broken:
+      await gameRef.loadSprite('game/platform_monitor_broken.png'),
+    };
+
+    current = BrokenPlatformState.cracked;
+    size = Vector2(115, 84);
+  }
+
+  void breakPlatform() {
+    current = BrokenPlatformState.broken;
+  }
+}                                                                     // ... to here.
 
 // More on Platforms: Add Add Spring State Enum
+enum SpringState { down, up }                                // Add lines from here...
 
 // More on Platforms: Add SpringBoard Platform class
+class SpringBoard extends Platform<SpringState> {
+  SpringBoard({
+    super.position,
+  });
+
+  @override
+  Future<void>? onLoad() async {
+    await super.onLoad();
+
+    sprites = <SpringState, Sprite>{
+      SpringState.down:
+      await gameRef.loadSprite('game/platform_trampoline_down.png'),
+      SpringState.up:
+      await gameRef.loadSprite('game/platform_trampoline_up.png'),
+    };
+
+    current = SpringState.up;
+
+    size = Vector2(100, 45);
+  }
+
+  @override
+  void onCollisionStart(
+      Set<Vector2> intersectionPoints, PositionComponent other) {
+    super.onCollisionStart(intersectionPoints, other);
+
+    bool isCollidingVertically =
+        (intersectionPoints.first.y - intersectionPoints.last.y).abs() < 5;
+
+    if (isCollidingVertically) {
+      current = SpringState.down;
+    }
+  }
+
+  @override
+  void onCollisionEnd(PositionComponent other) {
+    super.onCollisionEnd(other);
+
+    current = SpringState.up;
+  }
+}
 
 // Losing the game: Add EnemyPlatformState Enum
+enum EnemyPlatformState { only }                             // Add lines from here...
+
 
 // Losing the game: Add EnemyPlatform class
+class EnemyPlatform extends Platform<EnemyPlatformState> {
+  EnemyPlatform({super.position});
+
+  @override
+  Future<void>? onLoad() async {
+    var randBool = Random().nextBool();
+    var enemySprite = randBool ? 'enemy_trash_can' : 'enemy_error';
+
+    sprites = <EnemyPlatformState, Sprite>{
+      EnemyPlatformState.only:
+      await gameRef.loadSprite('game/$enemySprite.png'),
+    };
+
+    current = EnemyPlatformState.only;
+
+    return super.onLoad();
+  }
+}
