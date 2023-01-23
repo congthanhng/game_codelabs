@@ -48,6 +48,7 @@ class Player extends SpriteGroupComponent<PlayerState>
   final double _gravity = 9;
 
   bool _isProhibitControl = false;
+  bool isImmortal = false;
 
   @override
   Future<void> onLoad() async {
@@ -66,6 +67,10 @@ class Player extends SpriteGroupComponent<PlayerState>
     // Add a Player to the game: Add game state check
     if (gameRef.gameManager.isIntro || gameRef.gameManager.isGameOver) return;
     // Add a Player to the game: Add calcualtion for Dash's horizontal velocity
+    if(isMovingDown){
+      _isProhibitControl = false;
+      isImmortal = false;
+    }
     _velocity.x = _hAxisInput * jumpSpeed;
 
     final double dashHorizontalCenter = size.x / 2;
@@ -163,7 +168,7 @@ class Player extends SpriteGroupComponent<PlayerState>
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     super.onCollision(intersectionPoints, other);
 
-    if (other is EnemyPlatform && !isInvincible) {
+    if (other is EnemyPlatform && !isInvincible && !isImmortal) {
       // Add lines from here...
       gameRef.onLose();
       return;
@@ -173,11 +178,10 @@ class Player extends SpriteGroupComponent<PlayerState>
         (intersectionPoints.first.y - intersectionPoints.last.y).abs() < 5;
 
     if (isMovingDown && isCollidingVertically) {
-      _isProhibitControl = false;
       if (other is Banana) {
         jumpCross();
-        _removeToolAfterTime(other.activeLengthInMS);
         _isProhibitControl = true;
+        isImmortal = true;
         other.removeFromParent();
         return;
       }
