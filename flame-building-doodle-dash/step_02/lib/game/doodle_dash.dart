@@ -17,7 +17,7 @@ class DoodleDash extends FlameGame
     with HasKeyboardHandlerComponents, HasCollisionDetection {
   DoodleDash({super.children});
 
-  final World _world = World();
+  final World world = World();
   LevelManager levelManager = LevelManager();
   GameManager gameManager = GameManager();
   int screenBufferSpace = 300;
@@ -28,7 +28,7 @@ class DoodleDash extends FlameGame
 
   @override
   Future<void> onLoad() async {
-    await add(_world);
+    await add(world);
 
     await add(gameManager);
 
@@ -60,7 +60,7 @@ class DoodleDash extends FlameGame
         0,
         camera.position.y - screenBufferSpace,
         camera.gameSize.x,
-        camera.position.y + _world.size.y,
+        camera.position.y + world.size.y,
       );
       camera.worldBounds = worldBounds;
 
@@ -68,7 +68,7 @@ class DoodleDash extends FlameGame
         camera.worldBounds = worldBounds;
       }
 
-      var isInTopHalfOfScreen = player.position.y <= (_world.size.y / 2);
+      var isInTopHalfOfScreen = player.position.y <= (world.size.y / 2);
       if (!player.isMovingDown && isInTopHalfOfScreen) {
         camera.followComponent(player);
       }
@@ -76,7 +76,7 @@ class DoodleDash extends FlameGame
       // Losing the game: Add the first loss condition.
       if (player.position.y >
           camera.position.y +
-              _world.size.y +
+              world.size.y +
               player.size.y +
               screenBufferSpace) {
         onLose();
@@ -104,9 +104,9 @@ class DoodleDash extends FlameGame
     player.reset();
     camera.worldBounds = Rect.fromLTRB(
       0,
-      -_world.size.y,
+      -world.size.y,
       camera.gameSize.x,
-      _world.size.y +
+      world.size.y +
           screenBufferSpace,
     );
     camera.followComponent(player);

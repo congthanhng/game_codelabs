@@ -26,7 +26,7 @@ class ObjectManager extends Component with HasGameRef<DoodleDash> {
   final List<Platform> _platforms = [];
 
   // Add Platforms: Add onMount method
-  @override                                                   // Add lines from here...
+  @override // Add lines from here...
   void onMount() {
     super.onMount();
 
@@ -50,11 +50,28 @@ class ObjectManager extends Component with HasGameRef<DoodleDash> {
       );
 
       add(_platforms[i]);
+      generatedTools(_platforms);
+    }
+  }
+
+  void generatedTools(List<Platform> platforms) {
+    for (var element in platforms) {
+      generatedTool(element);
+    }
+  }
+
+  void generatedTool(Platform platform) {
+    if (platform is NormalPlatform) {
+      if (probGen.generateWithProbability(15)) {
+        add(Banana(
+            position: Vector2(platform.x + platform.width / 2,
+                platform.y - platform.height / 2)));
+      }
     }
   }
 
   // Add Platforms: Add update method
-  @override                                                   // Add lines from here...
+  @override // Add lines from here...
   void update(double dt) {
     final topOfLowestPlatform =
         _platforms.first.position.y + _tallestPlatformHeight;
@@ -71,11 +88,13 @@ class ObjectManager extends Component with HasGameRef<DoodleDash> {
 
       _platforms.add(nextPlat);
 
+      generatedTool(nextPlat);
+
       gameRef.gameManager.increaseScore();
 
       _cleanupPlatforms();
       // Losing the game: Add call to _maybeAddEnemy()
-      _maybeAddEnemy();                                                 // Add this line
+      _maybeAddEnemy(); // Add this line
 
       // Powerups: Add call to _mayb  eAddPowerup();
       _maybeAddPowerup();
@@ -104,25 +123,25 @@ class ObjectManager extends Component with HasGameRef<DoodleDash> {
 
   void enableLevelSpecialty(int level) {
     // More on Platforms: Add switch statement to enable SpringBoard for
-    switch (level) {                                           // Add lines from here...
+    switch (level) {
+      // Add lines from here...
       case 1:
         enableSpecialty('spring');
         break;
       case 2:
         enableSpecialty('broken');
         break;
-      case 3:                                               // Add lines from here...
+      case 3: // Add lines from here...
         enableSpecialty('noogler');
         break;
       case 4:
         enableSpecialty('rocket');
         break;
-      case 5:                                                  // Add lines from here...
+      case 5: // Add lines from here...
         enableSpecialty('enemy');
         break;
     }
     // level 1 and BrokenPlatform for level 2
-
   }
 
   void resetSpecialties() {
@@ -174,7 +193,7 @@ class ObjectManager extends Component with HasGameRef<DoodleDash> {
 
   // Add platforms: Add _semiRandomPlatform method
   Platform _semiRandomPlatform(Vector2 position) {
-    if (specialPlatforms['spring'] == true &&                 // Add lines from here...
+    if (specialPlatforms['spring'] == true && // Add lines from here...
         probGen.generateWithProbability(15)) {
       return SpringBoard(position: position);
     }
@@ -187,7 +206,7 @@ class ObjectManager extends Component with HasGameRef<DoodleDash> {
   }
 
   // Losing the game: Add enemy code
-  final List<EnemyPlatform> _enemies = [];                    // Add lines from here...
+  final List<EnemyPlatform> _enemies = []; // Add lines from here...
   void _maybeAddEnemy() {
     if (specialPlatforms['enemy'] != true) {
       return;
@@ -214,7 +233,7 @@ class ObjectManager extends Component with HasGameRef<DoodleDash> {
   }
 
 // Powerups: Add Power-Up code
-  final List<PowerUp> _powerups = [];                          // Add lines from here...
+  final List<PowerUp> _powerups = []; // Add lines from here...
 
   void _maybeAddPowerup() {
     if (specialPlatforms['noogler'] == true &&

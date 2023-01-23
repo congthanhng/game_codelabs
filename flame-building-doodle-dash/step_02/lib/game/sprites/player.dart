@@ -9,6 +9,7 @@ import 'package:flame/components.dart';
 import 'package:flutter/services.dart';
 
 import '../doodle_dash.dart';
+
 // Core gameplay: Import sprites.dart
 import 'sprites.dart';
 
@@ -34,15 +35,19 @@ class Player extends SpriteGroupComponent<PlayerState>
           priority: 1,
         );
 
-  int _hAxisInput = 0;
+  double _hAxisInput = 0;
   final int movingLeftInput = -1;
   final int movingRightInput = 1;
   Vector2 _velocity = Vector2.zero();
+
   bool get isMovingDown => _velocity.y > 0;
   Character character;
   double jumpSpeed;
+
   // Core gameplay: Add _gravity property
   final double _gravity = 9;
+
+  bool _isProhibitControl = false;
 
   @override
   Future<void> onLoad() async {
@@ -85,6 +90,7 @@ class Player extends SpriteGroupComponent<PlayerState>
 
   @override
   bool onKeyEvent(RawKeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
+    if(_isProhibitControl) return false;
     _hAxisInput = 0;
 
     // Add a Player to the game: Add keypress logic
@@ -107,9 +113,11 @@ class Player extends SpriteGroupComponent<PlayerState>
   void moveLeft() {
     _hAxisInput = 0;
     // Add a Player to the game: Add logic for moving left
-    if (isWearingHat) {                                       // Add lines from here...
+    if (isWearingHat) {
+      // Add lines from here...
       current = PlayerState.nooglerLeft;
-    } else if (!hasPowerup) {                                           // ... to here.
+    } else if (!hasPowerup) {
+      // ... to here.
       current = PlayerState.left;
     }
     _hAxisInput += movingLeftInput;
@@ -119,9 +127,11 @@ class Player extends SpriteGroupComponent<PlayerState>
     _hAxisInput = 0;
 
     // Add a Player to the game: Add logic for moving right
-    if (isWearingHat) {                                       // Add lines from here...
+    if (isWearingHat) {
+      // Add lines from here...
       current = PlayerState.nooglerRight;
-    } else if (!hasPowerup) {                                            //... to here.
+    } else if (!hasPowerup) {
+      //... to here.
       current = PlayerState.right;
     }
     _hAxisInput += movingRightInput;
@@ -132,27 +142,29 @@ class Player extends SpriteGroupComponent<PlayerState>
   }
 
   // Powerups: Add hasPowerup getter
-  bool get hasPowerup =>                                      // Add lines from here...
-  current == PlayerState.rocket ||
+  bool get hasPowerup => // Add lines from here...
+      current == PlayerState.rocket ||
       current == PlayerState.nooglerLeft ||
       current == PlayerState.nooglerRight ||
       current == PlayerState.nooglerCenter;
+
   // Powerups: Add isInvincible getter
 
   bool get isInvincible => current == PlayerState.rocket;
+
   // Powerups: Add isWearingHat getter
   bool get isWearingHat =>
       current == PlayerState.nooglerLeft ||
-          current == PlayerState.nooglerRight ||
-          current == PlayerState.nooglerCenter;
-
+      current == PlayerState.nooglerRight ||
+      current == PlayerState.nooglerCenter;
 
   // Core gameplay: Override onCollision callback
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     super.onCollision(intersectionPoints, other);
 
-    if (other is EnemyPlatform && !isInvincible) {                           // Add lines from here...
+    if (other is EnemyPlatform && !isInvincible) {
+      // Add lines from here...
       gameRef.onLose();
       return;
     }
@@ -161,11 +173,20 @@ class Player extends SpriteGroupComponent<PlayerState>
         (intersectionPoints.first.y - intersectionPoints.last.y).abs() < 5;
 
     if (isMovingDown && isCollidingVertically) {
+      _isProhibitControl = false;
+      if (other is Banana) {
+        jumpCross();
+        _removeToolAfterTime(other.activeLengthInMS);
+        _isProhibitControl = true;
+        other.removeFromParent();
+        return;
+      }
       current = PlayerState.center;
       if (other is NormalPlatform) {
         jump();
         return;
-      } else if (other is SpringBoard) {                      // Add lines from here...
+      } else if (other is SpringBoard) {
+        // Add lines from here...
         jump(specialJumpSpeed: jumpSpeed * 2);
         return;
       } else if (other is BrokenPlatform &&
@@ -176,7 +197,8 @@ class Player extends SpriteGroupComponent<PlayerState>
       }
     }
 
-    if (!hasPowerup && other is Rocket) {                    // Add lines from here...
+    if (!hasPowerup && other is Rocket) {
+      // Add lines from here...
       current = PlayerState.rocket;
       other.removeFromParent();
       jump(specialJumpSpeed: jumpSpeed * other.jumpSpeedMultiplier);
@@ -195,6 +217,22 @@ class Player extends SpriteGroupComponent<PlayerState>
   // Core gameplay: Add a jump method
   void jump({double? specialJumpSpeed}) {
     _velocity.y = specialJumpSpeed != null ? -specialJumpSpeed : -jumpSpeed;
+  }
+
+  void jumpCross() {
+    _velocity.y = -jumpSpeed * 2;
+    if (current == PlayerState.left) {
+      _hAxisInput += -0.7;
+    } else if (current == PlayerState.right) {
+      _hAxisInput += 0.7;
+    }
+  }
+
+  void _removeToolAfterTime(int ms) {
+    Future.delayed(Duration(milliseconds: ms), () {
+      current = PlayerState.center;
+      _hAxisInput = 0;
+    });
   }
 
   void _removePowerupAfterTime(int ms) {
