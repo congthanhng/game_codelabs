@@ -213,20 +213,22 @@ class Player extends SpriteGroupComponent<PlayerState>
       }
     }
 
-    if (!hasPowerup && other is Rocket) {
-      // Add lines from here...
-      current = PlayerState.rocket;
-      other.removeFromParent();
-      jump(specialJumpSpeed: jumpSpeed * other.jumpSpeedMultiplier);
-      return;
-    } else if (!hasPowerup && other is NooglerHat) {
-      if (current == PlayerState.center) current = PlayerState.nooglerCenter;
-      if (current == PlayerState.left) current = PlayerState.nooglerLeft;
-      if (current == PlayerState.right) current = PlayerState.nooglerRight;
-      other.removeFromParent();
-      _removePowerupAfterTime(other.activeLengthInMS);
-      jump(specialJumpSpeed: jumpSpeed * other.jumpSpeedMultiplier);
-      return;
+    if(!isImmortal){
+      if (!hasPowerup && other is Rocket) {
+        // Add lines from here...
+        current = PlayerState.rocket;
+        other.removeFromParent();
+        jump(specialJumpSpeed: jumpSpeed * other.jumpSpeedMultiplier);
+        return;
+      } else if (!hasPowerup && other is NooglerHat) {
+        if (current == PlayerState.center) current = PlayerState.nooglerCenter;
+        if (current == PlayerState.left) current = PlayerState.nooglerLeft;
+        if (current == PlayerState.right) current = PlayerState.nooglerRight;
+        other.removeFromParent();
+        _removePowerupAfterTime(other.activeLengthInMS);
+        jump(specialJumpSpeed: jumpSpeed * other.jumpSpeedMultiplier);
+        return;
+      }
     }
   }
 
