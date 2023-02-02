@@ -33,6 +33,7 @@ class Player extends SpriteGroupComponent<PlayerState>
           size: Vector2(79, 109),
           anchor: Anchor.center,
           priority: 1,
+
         );
 
   double _hAxisInput = 0;
@@ -49,6 +50,10 @@ class Player extends SpriteGroupComponent<PlayerState>
 
   bool _isProhibitControl = false;
   bool isImmortal = false;
+
+  // @override
+  // // TODO: implement debugMode
+  // bool get debugMode => true;
 
   @override
   Future<void> onLoad() async {

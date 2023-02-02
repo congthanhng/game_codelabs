@@ -34,6 +34,10 @@ abstract class Platform<T> extends SpriteGroupComponent<T>
           priority: 2,
         );
 
+  // @override
+  // // TODO: implement debugMode
+  // bool get debugMode => true;
+
   @override
   Future<void>? onLoad() async {
     await super.onLoad();
@@ -69,7 +73,7 @@ abstract class Platform<T> extends SpriteGroupComponent<T>
 }
 
 // Add platforms: Add NormalPlatformState Enum
-enum NormalPlatformState { only }                            // Add lines from here...
+enum NormalPlatformState { only } // Add lines from here...
 
 class NormalPlatform extends Platform<NormalPlatformState> {
   NormalPlatform({super.position});
@@ -101,7 +105,7 @@ class NormalPlatform extends Platform<NormalPlatformState> {
 // Add platforms: Add NormalPlatform class
 
 // More on Platforms: Add BrokenPlatform State Enum
-enum BrokenPlatformState { cracked, broken }                // Add lines from here...
+enum BrokenPlatformState { cracked, broken } // Add lines from here...
 
 // More on Platforms: Add BrokenPlatform class
 class BrokenPlatform extends Platform<BrokenPlatformState> {
@@ -113,9 +117,9 @@ class BrokenPlatform extends Platform<BrokenPlatformState> {
 
     sprites = <BrokenPlatformState, Sprite>{
       BrokenPlatformState.cracked:
-      await gameRef.loadSprite('game/platform_cracked_monitor.png'),
+          await gameRef.loadSprite('game/platform_cracked_monitor.png'),
       BrokenPlatformState.broken:
-      await gameRef.loadSprite('game/platform_monitor_broken.png'),
+          await gameRef.loadSprite('game/platform_monitor_broken.png'),
     };
 
     current = BrokenPlatformState.cracked;
@@ -125,10 +129,10 @@ class BrokenPlatform extends Platform<BrokenPlatformState> {
   void breakPlatform() {
     current = BrokenPlatformState.broken;
   }
-}                                                                     // ... to here.
+} // ... to here.
 
 // More on Platforms: Add Add Spring State Enum
-enum SpringState { down, up }                                // Add lines from here...
+enum SpringState { down, up } // Add lines from here...
 
 // More on Platforms: Add SpringBoard Platform class
 class SpringBoard extends Platform<SpringState> {
@@ -142,9 +146,9 @@ class SpringBoard extends Platform<SpringState> {
 
     sprites = <SpringState, Sprite>{
       SpringState.down:
-      await gameRef.loadSprite('game/platform_trampoline_down.png'),
+          await gameRef.loadSprite('game/platform_trampoline_down.png'),
       SpringState.up:
-      await gameRef.loadSprite('game/platform_trampoline_up.png'),
+          await gameRef.loadSprite('game/platform_trampoline_up.png'),
     };
 
     current = SpringState.up;
@@ -174,8 +178,7 @@ class SpringBoard extends Platform<SpringState> {
 }
 
 // Losing the game: Add EnemyPlatformState Enum
-enum EnemyPlatformState { only }                             // Add lines from here...
-
+enum EnemyPlatformState { only } // Add lines from here...
 
 // Losing the game: Add EnemyPlatform class
 class EnemyPlatform extends Platform<EnemyPlatformState> {
@@ -188,11 +191,38 @@ class EnemyPlatform extends Platform<EnemyPlatformState> {
 
     sprites = <EnemyPlatformState, Sprite>{
       EnemyPlatformState.only:
-      await gameRef.loadSprite('game/$enemySprite.png'),
+          await gameRef.loadSprite('game/$enemySprite.png'),
     };
 
     current = EnemyPlatformState.only;
 
     return super.onLoad();
+  }
+}
+
+enum SkypePlatformState { idle }
+
+class SkypePlatform extends Platform<SkypePlatformState>{
+  final Map<String, Vector2> spriteOptions = {
+    'Cloud_Skype_1': Vector2(101, 101),
+    'Cloud_Skype_2': Vector2(151, 151),
+    'Cloud_Skype_3': Vector2(212, 212),
+  };
+
+  @override
+  Future<void>? onLoad() async {
+
+    var randSpriteIndex = Random().nextInt(spriteOptions.length);
+
+    String randSprite = spriteOptions.keys.elementAt(randSpriteIndex);
+
+    sprites = {
+      SkypePlatformState.idle: await gameRef.loadSprite('game/sprites/$randSprite.png')
+    };
+
+    current = SkypePlatformState.idle;
+
+    size = spriteOptions[randSprite]!;
+    await super.onLoad();;
   }
 }

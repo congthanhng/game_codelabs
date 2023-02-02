@@ -17,8 +17,12 @@ abstract class PowerUp extends SpriteComponent
   }) : super(
           size: Vector2.all(50),
           priority: 2,
+
         );
 
+  // @override
+  // // TODO: implement debugMode
+  // bool get debugMode => true;
   @override
   Future<void>? onLoad() async {
     await super.onLoad();

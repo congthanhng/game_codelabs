@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 import 'package:flame/input.dart';
 import 'package:flutter/material.dart';
@@ -35,6 +36,7 @@ class DoodleDash extends FlameGame
     overlays.add('gameOverlay');
 
     await add(levelManager);
+    await add(FpsTextComponent(position: Vector2(size.x / 2, 15)));
   }
 
   @override

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:math';
+
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -11,6 +13,9 @@ import 'game/util/util.dart';
 import 'game/widgets/widgets.dart';
 
 void main() {
+  // var dice1 = Random().nextInt(6) +1;
+  // var dice2 = Random().nextInt(6) +1;
+  // print('$dice1 - $dice1');
   runApp(const MyApp());
 }
 
