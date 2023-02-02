@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
@@ -72,9 +73,16 @@ class Player extends SpriteGroupComponent<PlayerState>
     // Add a Player to the game: Add game state check
     if (gameRef.gameManager.isIntro || gameRef.gameManager.isGameOver) return;
     // Add a Player to the game: Add calcualtion for Dash's horizontal velocity
+
+    if(_isProhibitControl){
+      angle += 0.2;
+    }
+
     if(isMovingDown){
       _isProhibitControl = false;
       isImmortal = false;
+
+      angle = 0;
     }
     _velocity.x = _hAxisInput * jumpSpeed;
 
@@ -229,7 +237,7 @@ class Player extends SpriteGroupComponent<PlayerState>
   }
 
   void jumpCross() {
-    _velocity.y = -jumpSpeed * 2;
+    _velocity.y = -jumpSpeed * 1.2;
     if (current == PlayerState.left) {
       _hAxisInput += -0.7;
     } else if (current == PlayerState.right) {
